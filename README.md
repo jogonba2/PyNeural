@@ -7,7 +7,7 @@ In PyNeural.py script are implemented two examples of neural networks correspond
 
 Currently PyNeural only can be used for classify a sample or make a regression <img src="https://latex.codecogs.com/gif.latex?%5Cmathbb%7BR%7D%5E%7Bd%7D%5Crightarrow%20%5Cmathbb%7BR%7D%5E%7Bd%27%7D%20/%20d%3D%5Cleft%20%7C%20input%5C%3B%20layer%20%5Cright%20%7C%20%2C%20d%27%3D%5Cleft%20%7C%20output%5C%3B%20layer%20%5Cright%20%7C">, computation of weights theta has not been yet implemented, for this reason you must to set theta parameter </br>
 
-To configure a neural network, you must to set the next variables: </br></br>
+To configure a neural network, you must to set the next variables (hardcoded): </br></br>
 <img src="https://latex.codecogs.com/gif.latex?x%3Dsample%5Cin%20%5Cmathbb%7BR%7D%5E%7Bd%7D"/></br></br>
 <img src="https://latex.codecogs.com/gif.latex?theta%3D%5B%5B%5Bweight%5D_%7B0%7D%20...%20%5Bweight%5D_%7Blayerunits%7D%5D%5D_%7B0%7D%20...%20%5B%5Bweight%5D_%7B0%7D%20...%20%5Bweight%5D_%7Blayerunits%7D%5D%5D_%7B%7Clayers%7C%7D%5D%20%5D"></br></br>
 <img src="https://latex.codecogs.com/gif.latex?nHiddenLayers%3D%20number%5C%3B%20of%5C%3B%20hidden%5C%3B%20layer%5CM%20%5Cin%20%5Cmathbb%7BN%7D"></br></br>
@@ -17,10 +17,11 @@ To configure a neural network, you must to set the next variables: </br></br>
 
 and next:
 
-<code>pNeural = PyNeural(x,theta,nHiddenLayers,nUnitsPerLayer,outputUnits,sigmoid)
-	pNeural._forwardPropagation()
-	pNeural._classify()
-	pNeural._regression()
+<code>
+	pNeural = PyNeural(x,theta,nHiddenLayers,nUnitsPerLayer,outputUnits,sigmoid)</br>
+	pNeural._forwardPropagation()</br>
+	pNeural._classify()</br>
+	pNeural._regression()</br>
 </code> 
 
 such as the examples given.
