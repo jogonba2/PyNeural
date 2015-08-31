@@ -142,7 +142,7 @@ try:
 	nUnitsPerLayer = [3,3]
 	outputUnits    = 4
 	fActivate      = sigmoid
-	pNeural = PyNeural(x,theta,nHiddenLayers,nUnitsPerLayer,outputUnits,sigmoid)
+	pNeural = PyNeural(x,theta,nHiddenLayers,nUnitsPerLayer,outputUnits,fActivate)
 	pNeural._forwardPropagation()
 	pNeural._classify()
 	pNeural._regression()
@@ -165,7 +165,7 @@ try:
 	outputUnits    = 3
 	fActivate      = sigmoid
 
-	pNeural = PyNeural(x,theta,nHiddenLayers,nUnitsPerLayer,outputUnits,sigmoid)
+	pNeural = PyNeural(x,theta,nHiddenLayers,nUnitsPerLayer,outputUnits,fActivate)
 	pNeural._forwardPropagation()
 	pNeural._classify()
 	pNeural._regression()
