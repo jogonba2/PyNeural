@@ -15,5 +15,14 @@ To configure a neural network, you must to set the next variables: </br></br>
 <img src="https://latex.codecogs.com/gif.latex?outputUnits%20%3D%20number%5C%3B%20of%5C%3B%20hidden%5C%3B%20units%5C%3B%20in%5C%3B%20output%5C%3B%20layer%20%5Cin%20%5Cmathbb%7BN%7D"></br></br>
 <img src="https://latex.codecogs.com/gif.latex?fActivate%20%3D%20activation%5C%3B%20function%5C%3B%20for%5C%3B%20each%5C%3B%20neuron%5C%3B%20of%5C%3B%20the%5C%3B%20neural%5C%3B%20network%5Cin%20%5Cbegin%7Bbmatrix%7D%20lineal%20%2C%26%20jump%2C%20%26%20sigmoid%2C%20%26%20hiperbolic%5C%3B%20tangent%2C%20%26%20fast%20%5Cend%7Bbmatrix%7D"></br></br>
 
+and next:
 
+<code>pNeural = PyNeural(x,theta,nHiddenLayers,nUnitsPerLayer,outputUnits,sigmoid)
+	pNeural._forwardPropagation()
+	pNeural._classify()
+	pNeural._regression()
+</code> 
 
+such as the examples given.
+
+Enjoy it :)
