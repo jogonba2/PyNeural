@@ -17,12 +17,11 @@ To configure a neural network, you must to set the next variables (hardcoded): <
 
 and next:
 
-<code>
-	pNeural = PyNeural(x,theta,nHiddenLayers,nUnitsPerLayer,outputUnits,sigmoid)</br>
-	pNeural._forwardPropagation()</br>
-	pNeural._classify()</br>
-	pNeural._regression()</br>
-</code> 
+<code>pNeural = PyNeural(x,theta,nHiddenLayers,nUnitsPerLayer,outputUnits,sigmoid)</code></br>
+<code>ppNeural._forwardPropagation()</code></br>
+<code>ppNeural._classify()</code></br>
+<code>ppNeural._regression()</code></br>
+
 
 such as the examples given.
 
