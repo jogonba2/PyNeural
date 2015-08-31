@@ -15,6 +15,6 @@ def sigmoid(z):  return 1.0/(1+(e**-z))
 
 def hiperbolic_tangent(z): return ((e**z)-(e**-z))/((e**z)+(e**-z))
 
-def fast(z): 1/(1+abs(z))
+def fast(z): return 1.0/(1+abs(z))
 
 
