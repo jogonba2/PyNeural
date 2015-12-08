@@ -6,7 +6,7 @@
 #  Author: Overxflow13
 
 import numpy as np
-from ActivateFuncts import lineal,jump,sigmoid,hiperbolic_tangent,fast
+from ActivationFuncts import lineal,jump,sigmoid,hiperbolic_tangent,fast
 
 def header():
 	print """ -------------------------------------------------------\n
