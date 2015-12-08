@@ -3,9 +3,9 @@
 #
 #  PyNeural.py
 #  
-#  Copyright 2015 Overxflow13
+#  Author: Overxflow13
 
-from Exceptions import NonStableNeuralNetworkException
+import numpy as np
 from ActivateFuncts import lineal,jump,sigmoid,hiperbolic_tangent,fast
 
 def header():
@@ -20,156 +20,100 @@ def header():
 \n-------------------------------------------------------\n\n
 """
 
-def footer():
-	print "\n\n---------------\nBy overxfl0w13.\n---------------\n"
 
-class Layer:
+def footer(): print "\n\n---------------\nBy overxfl0w13.\n---------------\n"
 	
-	def __init__(self,i,nUnits,theta): self.i,self.nUnits,self.theta,self.s = i,nUnits,theta,[]
-	
-	def _setId(self,i):		   self.i = i
-	def _setTheta(self,theta): self.theta = theta
-	def _setS(self,s):		   self.s = s
-			
-	def _getNUnits(self):    return self.nUnits
-	def _getTheta(self):	 return self.theta
-	def _getId(self):		 return self.i
-	def _getS(self):		 return self.s
-		
-	
-class PyNeural:
-	
-	def __init__(self,x,theta,nHiddenLayers,nHiddenUnits,outputUnits,fActivate):
-		self.x,self.nHiddenLayers,self.nHiddenUnits,self.outputUnits,self.hiddenLayers,self.theta,self.fActivate = x,nHiddenLayers,nHiddenUnits,outputUnits,[],theta,fActivate
-		self.__initializeLayers()
-		err = self.__checkNeuralNetwork()
-		if type(err)==type("str"): raise NonStableNeuralNetworkException(err)
-		
-	
-	def _setX(self,x): 		       					   self.x = x
-	def _setTheta(self,theta): 	   					   self.theta = theta
-	def _setNHiddenLayers(self,nHiddenLayers):		   self.nHiddenLayers = nHiddenLayers
-	def _setNHiddenUnits(self,nHiddenUnits):		   self.nHiddenUnits  = nHiddenUnits
-	def _setOutputUnits(self,nOutputUnits):			   self.nOutputUnits  = nOutputUnits
-	
-	def _getX(self):								   return self.x
-	def _getTheta(self):							   return self.theta
-	def _getNHiddenLayers(self):					   return self.nHiddenLayers
-	def _getNHiddenUnits(self):						   return self.nHiddenUnits
-	def _getOutputUnits(self):						   return self.outputUnits
-	def _getHiddenLayers(self):						   return self.hiddenLayers
-			
+def forward_propagation(x,theta,factivation):
+	s = x
+	s_layers = []
+	for layer in xrange(len(theta)):
+		aux = [1.0]
+		for j in xrange(len(theta[layer])): aux.append(factivation[layer](sum(theta[layer][j]*s)))
+		s = aux
+		s_layers.append(s)
+	return s_layers
 
-	def __checkNeuralNetwork(self):
-		if not self.theta:								return "Theta is not modified correctly"
-		if len(self.theta)!=(self.nHiddenLayers+1):     return "Theta has not got the same length as nº of hidden layers"
-		if self.outputUnits<=0:				            return "Output units is not valid"
-		if not self.x:						            return "X is not valid"
-		if not all(self.nHiddenUnits):				    return "Some layer has not valid number of hidden units"
-		if len(self.nHiddenUnits)!=self.nHiddenLayers:  return "Number of hidden units specified does not match with the number of hidden layers"
-		return True
-		
-	def __initializeLayers(self):
-		c = 0
-		for i in xrange(self.nHiddenLayers): 
-			self.hiddenLayers.append(Layer(i,self.nHiddenUnits[i],self.theta[i])) ; c += 1
-		self.hiddenLayers.append(Layer(c,self.outputUnits,self.theta[c]))
+def classify(x,theta,factivation):
+	s_layers = forward_propagation(x,theta,factivation)
+	output_layer = list(s_layers[-1][1:])
+	return output_layer.index(max(output_layer))
 
-	def __computeSLayer(self,layer,s):
-		thetaLayer,nUnits,idLayer,sLayer = layer._getTheta(),layer._getNUnits(),layer._getId(),[]
-		if VERBOSE: print "-----\nLayer",idLayer,"\n-----"
-		for i in xrange(nUnits):
-			r = 0	
-			if VERBOSE: print "\t----\n\tUnit",i,"\n\t----"	
-			for j in xrange(len(s)):
-				if VERBOSE: print "\t\tR: ",thetaLayer[i][j],"*",s[j]
-				r += thetaLayer[i][j]*s[j]
-			if VERBOSE: print "\t\tSum:",r,"\n\t\tFActivate(Sum) =",self.fActivate(r)
-			sLayer.append(self.fActivate(r))				
-		return sLayer
+def regression(x,theta,factivarion): return forward_propagation(x,theta,factivation)[-1][1:]
+
+def back_propagation(S,theta,hidden_layers,neurons_by_layer,factivation,ro=1,max_iterations=250): 
+	
+	delta,theta_ant,fixed,it      = [],[],False,0
+
+	for i in xrange(hidden_layers+1):
+		aux = []
+		for j in xrange(neurons_by_layer[i]): aux.append(np.copy(theta[i][j]))
+		theta_ant.append(aux)
+		
+	while fixed==False and it<max_iterations:
+		for (x,t) in S: 
+			s_layers = forward_propagation(x,theta,factivation)
+			s_output_layer = s_layers[hidden_layers][1:]
+			for l in xrange(hidden_layers,-1,-1):
+				aux = []
+				for i in xrange(0,neurons_by_layer[l]):
+					if l==hidden_layers: aux.append(list((t-s_output_layer[i])*s_output_layer[i]*(1-s_output_layer[i]))[i])
+					else: 
+						sum_aux = 0
+						for r in xrange(neurons_by_layer[l+1]): sum_aux += delta[-1][r]*theta[l+1][r][i+1]
+						aux.append(sum_aux*s_layers[l][i+1]*(1.0-s_layers[l][i+1]))			
+				delta.append(np.array(aux))
+				
+			delta.reverse()
 			
+			for l in xrange(hidden_layers,-1,-1):
+				for i in xrange(0,neurons_by_layer[l]):
+					for j in xrange(len(theta[l][i])):
+						if l!=0: theta[l][i][j] = theta[l][i][j]+ro*(delta[l][i]*s_layers[l-1][j])
+						else:    theta[l][i][j] = theta[l][i][j] + ro*(delta[l][i]*x[j])
+						
+		if np.array_equal(theta_ant,theta): fixed=True
 		
-	def _forwardPropagation(self):
-		c = 0
-		for i in xrange(self.nHiddenLayers+1):
-			layer  = self.hiddenLayers[i]
-			if i==0: s = self.x
-			else:    s = self.hiddenLayers[i-1]._getS()
-			sLayer = self.__computeSLayer(layer,s)
-			layer._setS(sLayer)
-			c += 1						
-	
-	""" IOI _forwardPropagation was executed """
-	""" It assumes 1 output unit per class in output layer """
-	def _classify(self):
-		outputLayer = self.hiddenLayers[len(self.hiddenLayers)-1]
-		m,im,r = float("-inf"),-1,outputLayer._getS()
-		for i in xrange(len(r)):
-			if r[i]>m: m,im = r[i],i
-		print "\n\n---------------------\nClassification result\n---------------------\n\n\t-> Class",im
-	
-	""" IOI _forwardPropagation was executed """	
-	""" Regression of R^d -> R^d' with d = len(InputLayer) and d' = len(outputLayer)"""	
-	def _regression(self):	print "\n\n-----------------\nRegression result\n-----------------\n\n",str(self.hiddenLayers[len(self.hiddenLayers)-1]._getS())
+		theta_ant = []
+		for i in xrange(hidden_layers+1):
+			aux = []
+			for j in xrange(neurons_by_layer[i]): aux.append(np.copy(theta[i][j]))
+			theta_ant.append(aux)
+			
+		it += 1
 		
-	def _backwardPropagation(self): pass
-	def _incrementalBackwardPropagation(self): pass
-	def _momentumBackwardPropagation(self): pass
-	def _bufferBackwardPropagation(self): pass
+	return theta
+
+def incrementalBackwardPropagation(self): pass
+def momentumBackwardPropagation(self): pass
+def bufferBackwardPropagation(self): pass
 	
-	
-try:
+if __name__ == "__main__":
 	header()
-	VERBOSE,CLASSIFY,REGRESSION = 1,0,0
-	
-	print "------------ Example ------------ \n\n"
-	
-	# Example of: https://gyazo.com/27e1802a18be451bef187dc1cc208b24 # 
-	
-	x     = [5.2,4.9,3.5,2.7,1.3]
+	##### Definir topología de la red #####
+	hidden_layers = 2 # N de capas ocultas #
+	factivation   = [sigmoid,sigmoid,sigmoid] # Funcion de activacion #
+	neurons_by_layer = [2,3,3] # Neuronas por capa #
+	S = [(np.array([1,-2,1]),np.array([0,1,0])),(np.array([1,3,1]),np.array([1,0,0]))] # Conjunto de aprendizaje #
+	# Theta iniciales (aleatorios si no se conoce bien el problema) #
 	theta = [
-		[
-			[1,0.5,0.2,0.8,0.4],[1,0.3,0.7,0.4,0.3],[1,0.3,0.7,0.4,0.7],
-		],
-		[
-			[1,0.5,0.2,0.8],[1,0.3,0.7,0.4],[1,0.3,0.7,0.4]
-		],
-		[
-			[1,0.5,0.2],[1,0.3,0.7],[1,0.3,0.7],[1,0.25,0.37]
-		]
-	]
-	nHiddenLayers  = 2
-	nUnitsPerLayer = [3,3]
-	outputUnits    = 4
-	fActivate      = sigmoid
-	pNeural = PyNeural(x,theta,nHiddenLayers,nUnitsPerLayer,outputUnits,fActivate)
-	pNeural._forwardPropagation()
-	pNeural._classify()
-	pNeural._regression()
+				[np.array([1,1,1],dtype="f",copy=True),np.array([1,2,1],dtype="f",copy=True)],
+				[np.array([1,1,1],dtype="f",copy=True),np.array([-1,-2,-1],dtype="f",copy=True),np.array([-1,2,-1],dtype="f",copy=True)],
+				[np.array([1,1,1,1],dtype="f",copy=True),np.array([-1,-2,-1,1],dtype="f",copy=True),np.array([-1,2,-1,1],dtype="f",copy=True)]
+			]
+	max_iterations = 250 # Iteraciones maximas #
+	ro             = 1   # Factor de aprendizaje)
+	########################################
 	
-	print "\n\n ------------ Another example ------------ \n\n"
 	
-	# Example of: https://gyazo.com/2a011b7b0c42c6a0cd73970c3bacc9a8 #
+	##### Aprender parametros theta partiendo de un theta semilla #####
+	theta = back_propagation(S,theta,hidden_layers,neurons_by_layer,factivation,ro,max_iterations)
+	###################################################################
 	
-	x     = [1.25,3.21,4.56,2.35,7.53]
-	theta = [
-		[
-			[1,0.5,0.2,0.8,0.4],[1,0.3,0.7,0.4,0.3],[1,0.3,0.7,0.4,0.7],
-		],
-		[
-			[1,0.5,0.2],[1,0.35,0.45],[1,0.28,0.78]
-		]
-	]
-	nHiddenLayers  = 1
-	nUnitsPerLayer = [3]
-	outputUnits    = 3
-	fActivate      = sigmoid
-
-	pNeural = PyNeural(x,theta,nHiddenLayers,nUnitsPerLayer,outputUnits,fActivate)
-	pNeural._forwardPropagation()
-	pNeural._classify()
-	pNeural._regression()
 	
-except Exception as e: print e
-
-finally: footer()
+	##### Test muestra #####
+	x             = np.array([1,3,1])
+	print "Sample class: ",classify(x,theta,factivation)
+	print "Regression result: ",regression(x,theta,factivation)
+	########################
+	
+	footer()

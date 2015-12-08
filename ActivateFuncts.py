@@ -3,7 +3,7 @@
 #
 #  ActivateFuncts.py
 #  
-#  Copyright 2015 Overxflow13
+#  Author: Overxflow13
 
 from math import e
 
@@ -16,5 +16,6 @@ def sigmoid(z):  return 1.0/(1+(e**-z))
 def hiperbolic_tangent(z): return ((e**z)-(e**-z))/((e**z)+(e**-z))
 
 def fast(z): return 1.0/(1+abs(z))
+
 
 
