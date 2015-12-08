@@ -108,21 +108,21 @@ if __name__ == "__main__":
 	logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 	header()
 	##### Definir topología de la red #####
-	hidden_layers = 3 # N de capas ocultas #
-	factivation   = [sigmoid,sigmoid,sigmoid,sigmoid] # Funcion de activacion #
-	neurons_by_layer = [2,3,3,3] # Neuronas por capa #
-	S = [(np.array([1,-2,1]),np.array([0,1,0])),(np.array([1,3,1]),np.array([1,0,0])),(np.array([1,10,2]),np.array([0,0,1]))] # Conjunto de aprendizaje #
+	hidden_layers = 4 # N de capas ocultas #
+	factivation   = [sigmoid,sigmoid,sigmoid,sigmoid,sigmoid] # Funcion de activacion #
+	neurons_by_layer = [2,3,3,3,4] # Neuronas por capa #
+	S = [(np.array([1,-2,1]),np.array([0,0,0,1])),(np.array([1,3,1]),np.array([1,0,0,0])),(np.array([1,10,2]),np.array([0,0,1,0]))] # Conjunto de aprendizaje #
 	# Theta iniciales (aleatorios si no se conoce bien el problema) #
 	theta = [
 				[np.array([1,1,1],dtype="f",copy=True),np.array([1,2,1],dtype="f",copy=True)],
 				[np.array([1,1,1],dtype="f",copy=True),np.array([-1,-2,-1],dtype="f",copy=True),np.array([-1,2,-1],dtype="f",copy=True)],
 				[np.array([1,1,1,1],dtype="f",copy=True),np.array([-1,-2,-1,1],dtype="f",copy=True),np.array([-1,2,-1,1],dtype="f",copy=True)],
-				[np.array([1,1,1,1],dtype="f",copy=True),np.array([-1,-2,-1,1],dtype="f",copy=True),np.array([-1,2,-1,1],dtype="f",copy=True)]
+				[np.array([1,1,1,1],dtype="f",copy=True),np.array([-1,-2,-1,1],dtype="f",copy=True),np.array([-1,2,-1,1],dtype="f",copy=True)],
+				[np.array([1,1,1,1],dtype="f",copy=True),np.array([-1,-2,-1,1],dtype="f",copy=True),np.array([-1,2,-1,1],dtype="f",copy=True),np.array([-1,2,-1,1],dtype="f",copy=True)]
 			]
 	max_iterations = 250 # Iteraciones maximas #
 	ro             = 1   # Factor de aprendizaje)
 	########################################
-	
 	
 	##### Aprender parametros theta partiendo de un theta semilla #####
 	logging.info("Learning theta parameters...")
@@ -133,7 +133,7 @@ if __name__ == "__main__":
 	
 	
 	##### Test muestra #####
-	x             = np.array([1,10,1])
+	x             = np.array([1,35,1])
 	logging.info("Classifying sample...")
 	logging.info("Sample class: "+str(classify(x,theta,factivation)))
 	logging.info("Regression with sample...")
@@ -141,4 +141,3 @@ if __name__ == "__main__":
 	########################
 	
 	footer()
-
