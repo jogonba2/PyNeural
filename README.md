@@ -1,5 +1,5 @@
 # PyNeural
-Make your neural networks with PyNeural.
+Neural networks for academic purposes.
 
 1) Learning algorithms:
 
