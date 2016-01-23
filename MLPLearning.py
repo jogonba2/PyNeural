@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np 
+from random import randint,choice,uniform
 import matplotlib.pyplot as plt
-import warnings
+from warnings import filterwarnings
+from math import ceil
 import Config
 import Decision
 import Utils
-warnings.filterwarnings("ignore")
+filterwarnings("ignore")
 
 def forward_propagation(units_by_layer,xk,theta,factivation):
 	phi = []
@@ -521,7 +523,8 @@ def back_propagation_online_momentum(S,rho,nu,units_by_layer,factivation,max_it=
 		k += 1
 	return theta
 
-def evolutional(S,rho,nu,units_by_layer,factivation,max_it=250,report_it=50,min_val_pop=-100,max_val_pop=100):
+
+def evolutional(S,rho,nu,units_by_layer,factivation,max_epochs=1000,report_epochs=50,min_val_pop=-100,max_val_pop=100,max_range=1.1,min_range=0.9):
 	
 	def generate_random_population(n,len_crom,mini,maxi): return np.random.rand(n,len_crom) * (maxi-mini+1) + mini; 
 	
@@ -546,10 +549,47 @@ def evolutional(S,rho,nu,units_by_layer,factivation,max_it=250,report_it=50,min_
 			fitness.append(aux_mean_error)
 		return fitness
 		
-	def random_crossing(population): pass
-	def two_points_crossing(population): pass
-	def range_selection(population): pass
-	def roulette_selection(population): pass
+	def random_crossing(ind1,ind2,connections,n):
+		sons = []
+		for i in xrange(n):
+			mask = np.random.choice(2,connections)
+			son  = []
+			for j in xrange(len(connections)): son.append(ind1[j] if mask[j]==0 else ind2[j])
+			sons.append(son)
+		return sons
+		
+	def two_points_crossing(ind1,ind2):
+		cross_points = [i for i in xrange(len(ind1))]
+		cross_point_1,cross_point_2 = cross_points.pop(cross_points.index(choice(cross_points))),cross_points.pop(cross_points.index(choice(cross_points)))
+		cross_point_1,cross_point_2 = min(cross_point_1,cross_point_2),max(cross_point_1,cross_point_2)
+		s1 = ind2[:cross_point_1]+ind1[cross_point_1:cross_point_2]+ind2[cross_point_2:]
+		s2 = ind1[:cross_point_1]+ind2[cross_point_1:cross_point_2]+ind1[cross_point_2:]
+		return s1,s2
+     
+	def mutate(ind,prob=0.03):
+		l = [0]*(int((1.0-prob)*100))+[1]*(int(prob*100))
+		for i in xrange(len(ind)):
+			if choice(l)==1:
+				change = randint(0,len(ind)-1)
+				ind[i],ind[change] = ind[change],ind[i]
+		return ind
+		
+	""" Maxim, minim recomendados -> 1.1,0.9 """
+	def range_selection(population,fitness,maxi=1.1,mini=0.9): 
+		
+		def weighted_choice(choices):
+			total = sum(w for c,w in choices)
+			r,upto,i = uniform(0, total),0,0
+			for c, w in choices:
+				if upto + w > r: return i
+				upto,i = upto+w,i+1
+					
+		max_fitness,min_fitness,n = maxi,mini,len(fitness)
+		ranks = sorted([(fitness[i],i) for i in xrange(n)],reverse=True)
+		probs = [((ranks[i][1],float((max_fitness-(max_fitness-min_fitness)*(float(i)/(n-1))))/n)) for i in xrange(len(ranks))]
+		i1    = probs.pop(weighted_choice(probs))[0]
+		i2    = probs.pop(weighted_choice(probs))[0]
+		return i1,i2
 	
 	def opt(fitness): return min(fitness)
 	def get_optimal_ind(population,fitness): return get_phenotype(population[fitness.index(opt(fitness))],units_by_layer)
@@ -557,6 +597,13 @@ def evolutional(S,rho,nu,units_by_layer,factivation,max_it=250,report_it=50,min_
 	n_layers    = Utils.get_layers(units_by_layer)
 	connections = Utils.get_connections(units_by_layer)
 	population  = generate_random_population(2*connections,connections,min_val_pop,max_val_pop)
-	fitness     = get_fitness(population)	
-	## Building... #
+	fitness     = get_fitness(population)
+	epochs      = 0
+	while epochs<max_epochs:
+		i1,i2 = range_selection(population,fitness,max_range,min_range)
+		s1,s2 = two_points_crossing(population[i1].tolist(),population[i2].tolist())
+		s1,s2 = mutate(s1),mutate(s2)
+		population[i1],population[i2] = s1[:],s2[:]
+		fitness = get_fitness(population)
+		epochs += 1
 	return get_optimal_ind(population,fitness)
