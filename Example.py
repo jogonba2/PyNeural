@@ -28,7 +28,7 @@ if __name__ == "__main__":
 	# Topologia de la red #
 	units_by_layer = [len(S[0][0]),2,3]
 	factivation    = [Utils.get_factivation_layer(ActivationFuncts.sigmoid,ActivationFuncts.derivative_sigmoid,units_by_layer[1]),
-					  Utils.get_factivation_layer(ActivationFuncts.sigmoid,ActivationFuncts.derivative_sigmoid,units_by_layer[2])]
+					  Utils.get_factivation_layer(ActivationFuncts.lineal,ActivationFuncts.derivative_lineal,units_by_layer[2])]
 	Utils.get_info(units_by_layer,factivation)
 	#######################
 	
@@ -53,6 +53,7 @@ if __name__ == "__main__":
 	theta4 = MLPLearning.back_propagation_batch_buffer(S,rho,l,units_by_layer,factivation,850,50)
 	theta5 = MLPLearning.back_propagation_online_buffer(S,rho,l,units_by_layer,factivation,850,50)
 	theta6 = MLPLearning.back_propagation_online_momentum(S,rho,nu,units_by_layer,factivation,850,50)
+	theta7 = MLPLearning.evolutional(S,rho,nu,units_by_layer,factivation)
 	##############################
 	
 	# Clasificacion #
@@ -62,6 +63,7 @@ if __name__ == "__main__":
 	logging.info("Clase con theta4: (Backprop batch con amortiguamiento): "+str(Decision.classify(units_by_layer,[1.0,-6.3,1.0],theta4,factivation)))
 	logging.info("Clase con theta5: (Backprop online con amortiguamiento): "+str(Decision.classify(units_by_layer,[1.0,-6.3,1.0],theta5,factivation)))
 	logging.info("Clase con theta6: (Backprop online con momentum): "+str(Decision.classify(units_by_layer,[1.0,-6.3,1.0],theta6,factivation)))
+	logging.info("Clase con theta7: (Algoritmo genetico): "+str(Decision.classify(units_by_layer,[1.0,-6.3,1.0],theta7,factivation)))
 	#################
 
 	# Regresion #
@@ -71,6 +73,5 @@ if __name__ == "__main__":
 	logging.info("Regresion con theta4: (Backprop batch con amortiguamiento): "+str(Decision.regression(units_by_layer,[1.0,-6.3,1.0],theta4,factivation)))
 	logging.info("Regresion con theta5: (Backprop online con amortiguamiento): "+str(Decision.regression(units_by_layer,[1.0,-6.3,1.0],theta5,factivation)))
 	logging.info("Regresion con theta6: (Backprop online con momentum): "+str(Decision.regression(units_by_layer,[1.0,-6.3,1.0],theta6,factivation)))
+	logging.info("Regresion con theta7: (Algoritmo genetico): "+str(Decision.regression(units_by_layer,[1.0,-6.3,1.0],theta7,factivation)))
 	#############
-
-	Config.footer()

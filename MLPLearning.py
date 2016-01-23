@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import warnings
 import Config
 import Decision
+import Utils
 warnings.filterwarnings("ignore")
 
 def forward_propagation(units_by_layer,xk,theta,factivation):
@@ -520,4 +521,42 @@ def back_propagation_online_momentum(S,rho,nu,units_by_layer,factivation,max_it=
 		k += 1
 	return theta
 
-def evolutionary(S,rho,nu,units_by_layer,factivation,max_it=250,report_it=50): pass
+def evolutional(S,rho,nu,units_by_layer,factivation,max_it=250,report_it=50,min_val_pop=-100,max_val_pop=100):
+	
+	def generate_random_population(n,len_crom,mini,maxi): return np.random.rand(n,len_crom) * (maxi-mini+1) + mini; 
+	
+	def get_phenotype(ind,units_by_layer): 
+		theta,aux = [],0
+		for l in xrange(1,len(units_by_layer)): 
+			theta.append([])
+			if l-1==0: incr = units_by_layer[l-1]
+			else: 	   incr = units_by_layer[l-1]+1
+			for j in xrange(units_by_layer[l]): theta[-1].append(np.array(ind[aux:aux+incr]))
+			if l-1==0: aux += units_by_layer[l-1]
+			else: 	   aux += units_by_layer[l-1]+1
+		return theta
+	
+	def get_fitness(population):
+		def mean_square_error(x,y): return np.sqrt(((x - y) ** 2).mean(axis=0))
+		fitness = []
+		for ind in population:
+			ind = get_phenotype(ind,units_by_layer)
+			aux_mean_error = 0
+			for (x,y) in S: aux_mean_error += mean_square_error(y,Decision.get_output_vector(units_by_layer,x,ind,factivation))
+			fitness.append(aux_mean_error)
+		return fitness
+		
+	def random_crossing(population): pass
+	def two_points_crossing(population): pass
+	def range_selection(population): pass
+	def roulette_selection(population): pass
+	
+	def opt(fitness): return min(fitness)
+	def get_optimal_ind(population,fitness): return get_phenotype(population[fitness.index(opt(fitness))],units_by_layer)
+	
+	n_layers    = Utils.get_layers(units_by_layer)
+	connections = Utils.get_connections(units_by_layer)
+	population  = generate_random_population(2*connections,connections,min_val_pop,max_val_pop)
+	fitness     = get_fitness(population)	
+	## Building... #
+	return get_optimal_ind(population,fitness)
