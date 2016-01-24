@@ -18,4 +18,4 @@ def footer(): print "\n\n---------------\noverxfl0w13.\n---------------\n"
 
 COLORS = ["b","g","r","c","m","y","k","w"]
 STYLE   = ["o","x","s","^","--"]
-PLOT    = False
+VERBOSE    = True

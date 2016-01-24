@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np 
+import logging
 from random import randint,choice,uniform
 import matplotlib.pyplot as plt
 from warnings import filterwarnings
@@ -10,6 +11,7 @@ import Config
 import Decision
 import Utils
 filterwarnings("ignore")
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 def forward_propagation(units_by_layer,xk,theta,factivation):
 	phi = []
@@ -47,7 +49,7 @@ def back_propagation_batch(S,rho,units_by_layer,factivation,max_it=250,report_it
 		else:	   sm = units_by_layer[l-1]+1
 		for i in xrange(units_by_layer[l]): theta[-1].append(np.zeros(sm))		
 	# Plot #
-	if Config.PLOT: color_classes = [Config.COLORS[c%len(Config.COLORS)]+Config.STYLE[c%len(Config.STYLE)] for c in xrange(len(S[0][1]))]
+	if Config.VERBOSE: color_classes = [Config.COLORS[c%len(Config.COLORS)]+Config.STYLE[c%len(Config.STYLE)] for c in xrange(len(S[0][1]))]
 	# Mientras no converja #
 	while k<max_it:
 		# Inicializar incr_theta #
@@ -89,7 +91,7 @@ def back_propagation_batch(S,rho,units_by_layer,factivation,max_it=250,report_it
 			for i in xrange(len(theta[l])): theta[l][i] += rho*incr_theta[l][i]
 		
 		# Plot de las muestras #
-		if Config.PLOT:
+		if Config.VERBOSE:
 			if k%report_it==0:
 				plt.clf()
 				plt.ylabel("Y")
@@ -122,7 +124,7 @@ def back_propagation_online(S,rho,units_by_layer,factivation,max_it=250,report_i
 		else:	   sm = units_by_layer[l-1]+1
 		for i in xrange(units_by_layer[l]): theta[-1].append(np.zeros(sm))
 	# Plot #
-	if Config.PLOT: color_classes = [Config.COLORS[c%len(Config.COLORS)]+Config.STYLE[c%len(Config.STYLE)] for c in xrange(len(S[0][1]))]
+	if Config.VERBOSE: color_classes = [Config.COLORS[c%len(Config.COLORS)]+Config.STYLE[c%len(Config.STYLE)] for c in xrange(len(S[0][1]))]
 	# Mientras no converja #
 	while k<max_it:
 		# Inicializar delta #
@@ -166,7 +168,7 @@ def back_propagation_online(S,rho,units_by_layer,factivation,max_it=250,report_i
 				for i in xrange(len(theta[l])): theta[l][i] += rho*incr_theta[l][i]
 			m += 1	
 		# Plot de las muestras #
-		if Config.PLOT:
+		if Config.VERBOSE:
 			if k%report_it==0:
 				plt.clf()
 				plt.ylabel("Y")
@@ -208,7 +210,7 @@ def back_propagation_batch_momentum(S,rho,nu,units_by_layer,factivation,max_it=2
 		for i in xrange(units_by_layer[l]): incr_theta_ant [-1].append(np.zeros(sm))
 	
 	# Plot #
-	if Config.PLOT: color_classes = [Config.COLORS[c%len(Config.COLORS)]+Config.STYLE[c%len(Config.STYLE)] for c in xrange(len(S[0][1]))]
+	if Config.VERBOSE: color_classes = [Config.COLORS[c%len(Config.COLORS)]+Config.STYLE[c%len(Config.STYLE)] for c in xrange(len(S[0][1]))]
 	
 	# Mientras no converja #
 	while k<max_it:
@@ -255,7 +257,7 @@ def back_propagation_batch_momentum(S,rho,nu,units_by_layer,factivation,max_it=2
 				incr_theta_ant[l][i] = (rho*incr_theta[l][i]) + (nu*incr_theta_ant[l][i])
 		
 		# Plot de las muestras #
-		if Config.PLOT:
+		if Config.VERBOSE:
 			if k%report_it==0:
 				plt.clf()
 				plt.ylabel("Y")
@@ -288,7 +290,7 @@ def back_propagation_batch_buffer(S,rho,l,units_by_layer,factivation,max_it=250,
 		for i in xrange(units_by_layer[l]): theta[-1].append(np.zeros(sm))
 		
 	# Plot #
-	if Config.PLOT: color_classes = [Config.COLORS[c%len(Config.COLORS)]+Config.STYLE[c%len(Config.STYLE)] for c in xrange(len(S[0][1]))]
+	if Config.VERBOSE: color_classes = [Config.COLORS[c%len(Config.COLORS)]+Config.STYLE[c%len(Config.STYLE)] for c in xrange(len(S[0][1]))]
 	
 	# Mientras no converja #
 	while k<max_it:
@@ -332,7 +334,7 @@ def back_propagation_batch_buffer(S,rho,l,units_by_layer,factivation,max_it=250,
 			for i in xrange(len(theta[l])): theta[l][i] += (rho*incr_theta[l][i]) + (2*rho*l*theta[l][i])
 		
 		# Plot de las muestras #
-		if Config.PLOT:
+		if Config.VERBOSE:
 			if k%report_it==0:
 				plt.clf()
 				plt.ylabel("Y")
@@ -365,7 +367,7 @@ def back_propagation_online_buffer(S,rho,l,units_by_layer,factivation,max_it=250
 		for i in xrange(units_by_layer[l]): theta[-1].append(np.zeros(sm))
 	
 	# Plot #
-	if Config.PLOT: color_classes = [Config.COLORS[c%len(Config.COLORS)]+Config.STYLE[c%len(Config.STYLE)] for c in xrange(len(S[0][1]))]
+	if Config.VERBOSE: color_classes = [Config.COLORS[c%len(Config.COLORS)]+Config.STYLE[c%len(Config.STYLE)] for c in xrange(len(S[0][1]))]
 	
 	# Mientras no converja #
 	while k<max_it:
@@ -410,7 +412,7 @@ def back_propagation_online_buffer(S,rho,l,units_by_layer,factivation,max_it=250
 				for i in xrange(len(theta[l])): theta[l][i] += (rho*incr_theta[l][i]) + (2*rho*l*theta[l][i])
 			m += 1	
 		# Plot de las muestras #
-		if Config.PLOT:
+		if Config.VERBOSE:
 			if k%report_it==0:
 				plt.clf()
 				plt.ylabel("Y")
@@ -452,7 +454,7 @@ def back_propagation_online_momentum(S,rho,nu,units_by_layer,factivation,max_it=
 		for i in xrange(units_by_layer[l]): incr_theta_ant [-1].append(np.zeros(sm))
 		
 	# Plot #
-	if Config.PLOT: color_classes = [Config.COLORS[c%len(Config.COLORS)]+Config.STYLE[c%len(Config.STYLE)] for c in xrange(len(S[0][1]))]
+	if Config.VERBOSE: color_classes = [Config.COLORS[c%len(Config.COLORS)]+Config.STYLE[c%len(Config.STYLE)] for c in xrange(len(S[0][1]))]
 	
 	# Mientras no converja #
 	while k<max_it:
@@ -502,7 +504,7 @@ def back_propagation_online_momentum(S,rho,nu,units_by_layer,factivation,max_it=
 			m += 1	
 		
 		# Plot de las muestras #
-		if Config.PLOT:
+		if Config.VERBOSE:
 			if k%report_it==0:
 				plt.clf()
 				plt.ylabel("Y")
@@ -524,7 +526,7 @@ def back_propagation_online_momentum(S,rho,nu,units_by_layer,factivation,max_it=
 	return theta
 
 
-def evolutional(S,rho,nu,units_by_layer,factivation,max_epochs=1000,report_epochs=50,min_val_pop=-100,max_val_pop=100,max_range=1.1,min_range=0.9):
+def evolutional(S,units_by_layer,factivation,max_epochs=1000,report_epochs=50,min_val_pop=-100,max_val_pop=100,max_range=1.1,min_range=0.9):
 	
 	def generate_random_population(n,len_crom,mini,maxi): return np.random.rand(n,len_crom) * (maxi-mini+1) + mini; 
 	
@@ -534,9 +536,10 @@ def evolutional(S,rho,nu,units_by_layer,factivation,max_epochs=1000,report_epoch
 			theta.append([])
 			if l-1==0: incr = units_by_layer[l-1]
 			else: 	   incr = units_by_layer[l-1]+1
-			for j in xrange(units_by_layer[l]): theta[-1].append(np.array(ind[aux:aux+incr]))
-			if l-1==0: aux += units_by_layer[l-1]
-			else: 	   aux += units_by_layer[l-1]+1
+			for j in xrange(units_by_layer[l]): 
+				theta[-1].append(np.array(ind[aux:aux+incr]))
+				if l-1==0: aux += units_by_layer[l-1]
+				else: 	   aux += units_by_layer[l-1]+1
 		return theta
 	
 	def get_fitness(population):
@@ -574,7 +577,6 @@ def evolutional(S,rho,nu,units_by_layer,factivation,max_epochs=1000,report_epoch
 				ind[i],ind[change] = ind[change],ind[i]
 		return ind
 		
-	""" Maxim, minim recomendados -> 1.1,0.9 """
 	def range_selection(population,fitness,maxi=1.1,mini=0.9): 
 		
 		def weighted_choice(choices):
@@ -596,14 +598,20 @@ def evolutional(S,rho,nu,units_by_layer,factivation,max_epochs=1000,report_epoch
 	
 	n_layers    = Utils.get_layers(units_by_layer)
 	connections = Utils.get_connections(units_by_layer)
-	population  = generate_random_population(2*connections,connections,min_val_pop,max_val_pop)
+	population  = generate_random_population(2*connections,connections,min_val_pop,max_val_pop).tolist()
 	fitness     = get_fitness(population)
-	epochs      = 0
-	while epochs<max_epochs:
-		i1,i2 = range_selection(population,fitness,max_range,min_range)
-		s1,s2 = two_points_crossing(population[i1].tolist(),population[i2].tolist())
-		s1,s2 = mutate(s1),mutate(s2)
-		population[i1],population[i2] = s1[:],s2[:]
+	epoch       = 0
+	while epoch<max_epochs:
+		aux_population = population[:]
+		population     = []
+		for x in xrange(len(aux_population)/2):
+			i1,i2 = range_selection(aux_population,fitness,max_range,min_range)
+			s1,s2 = two_points_crossing(aux_population[i1],aux_population[i2])
+			s1,s2 = mutate(s1),mutate(s2)
+			i1,i2 = max(i1,i2),min(i1,i2)
+			del aux_population[i1]; del aux_population[i2]; del fitness[i1]; del fitness[i2]
+			population.append(s1[:]); population.append(s2[:])	
 		fitness = get_fitness(population)
-		epochs += 1
-	return get_optimal_ind(population,fitness)
+		epoch += 1
+		if Config.VERBOSE and epoch%report_epochs==0: logging.info("Epoch "+str(epoch)+" fitness: "+str(sum(fitness)))
+	return get_optimal_ind(population,fitness),sum(fitness)
